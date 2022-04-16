@@ -50,7 +50,7 @@
 typedef uint64_t key56_t;
 typedef key56_t key112_t[2];
 typedef uint64_t round_key_t;
-typedef uint64_t des_round_keys_t[NUM_ROUNDS];
+typedef round_key_t des_round_keys_t[NUM_ROUNDS];
 typedef des_round_keys_t tdes_round_keys_t[2];
 typedef uint32_t permuted_key_part_t;
 
