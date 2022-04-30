@@ -23,6 +23,7 @@
 #define SBOX_SIZE 64
 #define NUM_SBOXES 8
 #define SBOX_IDX_LEN 6
+#define SBOX_OUT_LEN 4
 #define SBOX_IDX_MASK (BIT_AT(SBOX_IDX_LEN) - 1)
 
 #define HALF_BLOCK_SIZE (BLOCK_SIZE / 2)
@@ -227,7 +228,7 @@ static half_block_t des_f(const half_block_t r, const round_key_t round_key) {
     for (uint32_t i = 0; i < NUM_SBOXES; i++) {
         const uint32_t shamt = EXPANSION_SIZE - (i + 1) * SBOX_IDX_LEN;
         const uint32_t sbox_idx = (sbox_in >> shamt) & SBOX_IDX_MASK;
-        sbox_out |= sboxes[i][sbox_idx] << shamt;
+        sbox_out |= sboxes[i][sbox_idx] << SBOX_OUT_LEN * (NUM_SBOXES - i - 1);
     }
 
     return (half_block_t)permute(sbox_out, f_permutation, HALF_BLOCK_SIZE);
@@ -251,7 +252,8 @@ static key56_t expand_key(const plain_des_key_t key) {
 
     for (uint32_t i = 0; i <= KEY_SIZE / 8; i++) {
         uint64_t key_bits = ((key >> (i * 7)) & (BIT_AT(7) - 1)) << 1;
-        key_bits |= ~(PARITY_MASK(key_bits & 0xf) ^ PARITY_MASK((key_bits >> 4) & 0xf)) & BIT_AT(0);
+        key_bits |=
+            (~(PARITY_MASK(key_bits & 0xf) ^ PARITY_MASK((key_bits >> 4) & 0xf))) & BIT_AT(0);
         expanded_key |= key_bits << (i * 8);
     }
 
@@ -270,7 +272,8 @@ static void generate_round_keys(const key56_t key, des_round_keys_t *round_keys,
     round_key_generator_t rkg;
     init_round_key_generator(&rkg, key);
     for (uint32_t round = 0; round < NUM_ROUNDS; round++) {
-        (*round_keys)[ROUND_INDEX(round, crypt_mode)] = generate_round_key(&rkg);
+        round_key_t rk = generate_round_key(&rkg);
+        (*round_keys)[ROUND_INDEX(round, crypt_mode)] = rk;
     }
 }
 

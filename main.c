@@ -17,7 +17,7 @@
 #define ICASE(c) ((c) & ~0x20)
 #define TO_HEX(c)                                                                                  \
     ((c) >= '0' && c <= '9'               ? (c) - '0'                                              \
-     : ICASE(c) >= 'A' && ICASE(c) <= 'F' ? ICASE(c) - 'A'                                         \
+     : ICASE(c) >= 'A' && ICASE(c) <= 'F' ? (ICASE(c) - 'A' + 10)                                  \
                                           : 0xff)
 
 #define OPTION(opt, explanation) "\r\t" opt "\r\n\t\t" explanation "\r\n"
@@ -98,7 +98,7 @@ int parse_key(char *key, settings_t *settings) {
             printf("Invalid hexadecimal key byte: %c.\n", key[i]);
             return SETTINGS_INVALID;
         }
-        current_key = (current_key << 8) | byte;
+        current_key = (current_key << 4) | (byte & 0xf);
         if (i == KEY_STR_DES_LEN - 1 || i == KEY_STR_TDES_LEN - 1) {
             settings->key.tdes_key[key_idx++] = current_key;
         }
