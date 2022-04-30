@@ -38,7 +38,7 @@
     ((((v) << (shamt)) | ((v) >> ((KEY_SIZE / 2) - (shamt)))) & (BIT_AT(KEY_SIZE / 2) - 1))
 
 #define CONCAT(left, right) ((block_t)(right) | ((block_t)(left) << HALF_BLOCK_SIZE))
-#define PARITY_MASK(nibble) (((0x6996 >> (nibble)) << 7) & BIT_AT(7))
+#define PARITY_MASK(nibble) (((0x6996 >> (nibble))) & BIT_AT(0))
 
 #define ROUND_INDEX(round, mode)                                                                   \
     ((mode) == CRYPT_MODE_ENCRYPT ? (round) : (NUM_ROUNDS - 1 - (round)))
@@ -250,8 +250,8 @@ static key56_t expand_key(const plain_des_key_t key) {
     key56_t expanded_key = 0;
 
     for (uint32_t i = 0; i <= KEY_SIZE / 8; i++) {
-        uint64_t key_bits = ((key >> (i * 7)) & (BIT_AT(7) - 1));
-        key_bits |= ~(PARITY_MASK(key_bits & 0xf) ^ PARITY_MASK((key_bits >> 4) & 0xf)) & BIT_AT(7);
+        uint64_t key_bits = ((key >> (i * 7)) & (BIT_AT(7) - 1)) << 1;
+        key_bits |= ~(PARITY_MASK(key_bits & 0xf) ^ PARITY_MASK((key_bits >> 4) & 0xf)) & BIT_AT(0);
         expanded_key |= key_bits << (i * 8);
     }
 
