@@ -238,7 +238,7 @@ static permute_block_t permute(const permute_block_t input, const permutation_t 
     block_t output = 0;
 
     for (uint32_t i = 0; i < nbits; i++) {
-        const uint32_t pos = permutation[i];
+        const uint32_t pos = nbits - permutation[i] - 1;
         const block_t bit = (input & BIT_AT(pos)) >> pos;
         output |= bit << (nbits - i - 1);
     }
