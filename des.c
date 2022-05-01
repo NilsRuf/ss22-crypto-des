@@ -34,7 +34,7 @@
 
 #define CX(block) ((block) & (BIT_AT(KEY_SIZE / 2) - 1))
 #define DX(block) (((block) >> (KEY_SIZE / 2)) & (BIT_AT(KEY_SIZE / 2) - 1))
-#define STACK_CD(c, d) ((c) | ((d) << (KEY_SIZE / 2)))
+#define STACK_CD(c, d) ((d) | ((c) << (KEY_SIZE / 2)))
 #define KEY_DERIV_LEFT_ROTATE(v, shamt)                                                            \
     ((((v) << (shamt)) | ((v) >> ((KEY_SIZE / 2) - (shamt)))) & (BIT_AT(KEY_SIZE / 2) - 1))
 
